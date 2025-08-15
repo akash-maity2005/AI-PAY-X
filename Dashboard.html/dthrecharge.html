@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTH Recharge Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+            --secondary-gradient: linear-gradient(135deg, #06B6D4 0%, #8B5CF6 100%);
+            --success-gradient: linear-gradient(135deg, #10B981 0%, #06B6D4 100%);
+            --warning-gradient: linear-gradient(135deg, #F59E0B 0%, #EC4899 100%);
+            --danger-gradient: linear-gradient(135deg, #EF4444 0%, #EC4899 100%);
+            --dark-gradient: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-tertiary: rgba(255, 255, 255, 0.6);
+            --bg-primary: #0F0B1A;
+            --bg-secondary: #1A1332;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(ellipse at top, #1A1332 0%, #0F0B1A 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background gradient overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,
+                    rgba(139, 92, 246, 0.1) 0%,
+                    rgba(236, 72, 153, 0.1) 25%,
+                    rgba(6, 182, 212, 0.1) 50%,
+                    rgba(139, 92, 246, 0.1) 75%,
+                    rgba(236, 72, 153, 0.1) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            animation: slideInUp 0.8s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInLeft 0.8s ease;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .level-badge {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            animation: slideInRight 0.8s ease;
+        }
+
+        .icon-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .icon-btn:hover::before {
+            left: 100%;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.3);
+            background: var(--primary-gradient);
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 40px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 40px 0;
+        }
+
+        .balance-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 1s ease 0.2s both;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .balance-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            animation: rotate 20s linear infinite;
+            z-index: -1;
+        }
+
+        .balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .balance-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .toggle-visibility {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .toggle-visibility:hover {
+            background: var(--glass-bg);
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .balance-amount {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .balance-change {
+            color: #06B6D4;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .balance-change::before {
+            content: '🚀';
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .action-btn {
+            padding: 20px 24px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1), transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .action-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+        }
+
+        .action-btn.secondary {
+            background: var(--glass-bg);
+            color: white;
+            border: 1px solid var(--glass-border);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--secondary-gradient);
+            box-shadow: 0 16px 48px rgba(139, 92, 246, 0.4);
+        }
+
+        .action-btn.secondary:hover {
+            background: var(--primary-gradient);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 1s ease calc(0.4s + var(--delay, 0s)) both;
+        }
+
+        .stat-card:nth-child(1) {
+            --delay: 0s;
+        }
+
+        .stat-card:nth-child(2) {
+            --delay: 0.1s;
+        }
+
+        .stat-card:nth-child(3) {
+            --delay: 0.2s;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-subtitle {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        /* DTH Recharge Section */
+        .dth-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 40px;
+            animation: slideInUp 1s ease 0.4s both;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #8B5CF6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+        }
+
+        .form-select {
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 20px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #8B5CF6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+        }
+
+        .plan-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .plan-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .plan-option:hover::before {
+            left: 100%;
+        }
+
+        .plan-option.selected {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8B5CF6;
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+        }
+
+        .plan-option:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .plan-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .plan-price {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .plan-details {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .submit-btn {
+            padding: 18px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.3);
+            background: var(--secondary-gradient);
+        }
+
+        /* Recent Recharges */
+        .recent-recharges {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            animation: slideInUp 1s ease 0.6s both;
+        }
+
+        .recharge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .recharge-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
+        }
+
+        .recharge-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .recharge-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recharge-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .recharge-details p {
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        .recharge-amount {
+            font-weight: 700;
+            color: #06B6D4;
+        }
+
+        .view-all {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .view-all-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* Floating Elements */
+        .floating-shape {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.05;
+            animation: floatRandom 20s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .floating-shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes floatRandom {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(30px, -30px) rotate(90deg);
+            }
+
+            50% {
+                transform: translate(-20px, 20px) rotate(180deg);
+            }
+
+            75% {
+                transform: translate(20px, -10px) rotate(270deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .plan-options {
+                grid-template-columns: 1fr;
+            }
+
+            .balance-amount {
+                font-size: 40px;
+            }
+
+            .container {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating background elements -->
+    <div class="floating-shape">📡</div>
+    <div class="floating-shape">📺</div>
+    <div class="floating-shape">🔌</div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">📺</div>
+                <div class="logo-text">DTH Recharge</div>
+            </div>
+            <div class="user-section">
+                <button class="icon-btn">🔔</button>
+                <button class="icon-btn">💬</button>
+                <div class="user-avatar">JS</div>
+            </div>
+        </header>
+
+        
+            <!-- DTH Recharge Section -->
+            <section class="dth-section">
+                <h2 class="section-title">DTH Recharge</h2>
+                <form class="dth-form">
+                    <div class="form-group">
+                        <label for="operator" class="form-label">Select DTH Operator</label>
+                        <select id="operator" class="form-select" required>
+                            <option value="">Select your operator</option>
+                            <option value="tata_sky">Tata Sky</option>
+                            <option value="airtel">Airtel Digital TV</option>
+                            <option value="dish_tv">Dish TV</option>
+                            <option value="d2h">d2h</option>
+                            <option value="sun_direct">Sun Direct</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subscriber-id" class="form-label">Subscriber ID</label>
+                        <input type="text" id="subscriber-id" class="form-input" placeholder="Enter your subscriber ID" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Select Plan</label>
+                        <div class="plan-options">
+                            <div class="plan-option">
+                                <div class="plan-name">Basic Pack</div>
+                                <div class="plan-price">₹199</div>
+                                <div class="plan-details">100+ Channels</div>
+                                <div class="plan-details">Validity: 30 Days</div>
+                            </div>
+                            <div class="plan-option selected">
+                                <div class="plan-name">Popular Pack</div>
+                                <div class="plan-price">₹299</div>
+                                <div class="plan-details">200+ Channels</div>
+                                <div class="plan-details">Validity: 30 Days</div>
+                            </div>
+                            <div class="plan-option">
+                                <div class="plan-name">Premium Pack</div>
+                                <div class="plan-price">₹499</div>
+                                <div class="plan-details">300+ Channels</div>
+                                <div class="plan-details">Validity: 30 Days</div>
+                            </div>
+                            <div class="plan-option">
+                                <div class="plan-name">Ultra HD Pack</div>
+                                <div class="plan-price">₹799</div>
+                                <div class="plan-details">400+ Channels</div>
+                                <div class="plan-details">Validity: 30 Days</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span>Recharge Now</span>
+                        <span>→</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Recent Recharges -->
+            <section class="recent-recharges">
+                <h2 class="section-title">Recent Recharges</h2>
+                <div class="recharge-item">
+                    <div class="recharge-info">
+                        <div class="recharge-icon">📡</div>
+                        <div class="recharge-details">
+                            <h4>Tata Sky</h4>
+                            <p>15 May 2023 • 12:34 PM</p>
+                        </div>
+                    </div>
+                    <div class="recharge-amount">₹299</div>
+                </div>
+                <div class="recharge-item">
+                    <div class="recharge-info">
+                        <div class="recharge-icon">📺</div>
+                        <div class="recharge-details">
+                            <h4>Airtel Digital TV</h4>
+                            <p>10 Apr 2023 • 09:15 AM</p>
+                        </div>
+                    </div>
+                    <div class="recharge-amount">₹499</div>
+                </div>
+                <div class="recharge-item">
+                    <div class="recharge-info">
+                        <div class="recharge-icon">🛰️</div>
+                        <div class="recharge-details">
+                            <h4>Dish TV</h4>
+                            <p>25 Mar 2023 • 04:20 PM</p>
+                        </div>
+                    </div>
+                    <div class="recharge-amount">₹199</div>
+                </div>
+                <div class="view-all">
+                    <button class="view-all-btn">View All Recharges →</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Simple script to handle plan selection
+        document.querySelectorAll('.plan-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.plan-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
+
+        // Form submission handler
+        document.querySelector('.dth-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const operator = document.getElementById('operator').value;
+            const subscriberId = document.getElementById('subscriber-id').value;
+            const selectedPlan = document.querySelector('.plan-option.selected .plan-name').textContent;
+            
+            if (!operator || !subscriberId) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            alert(`Recharge successful!\nOperator: ${operator}\nSubscriber ID: ${subscriberId}\nPlan: ${selectedPlan}`);
+        });
+    </script>
+</body>
+</html>
